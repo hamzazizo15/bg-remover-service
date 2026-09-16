@@ -3,10 +3,11 @@ os.environ["U2NET_HOME"] = "/tmp/.u2net"
 os.environ["HOME"] = "/tmp"
 
 from flask import Flask, request, send_file
-from rembg import remove
+from rembg import remove, new_session
 import io
 
 app = Flask(__name__)
+session = new_session("u2net")
 
 @app.route("/")
 def health():
@@ -17,7 +18,7 @@ def remove_background():
     if "image" not in request.files:
         return {"error": "no image provided"}, 400
     input_bytes = request.files["image"].read()
-    output_bytes = remove(input_bytes)
+    output_bytes = remove(input_bytes, session=session)
     return send_file(io.BytesIO(output_bytes), mimetype="image/png")
 
 if __name__ == "__main__":
